@@ -3,15 +3,15 @@ requests==2.23.0
 datatypes-date-time>=1.0.0.a1
 azure-cognitiveservices-language-luis>=0.2.0
 msrest>=0.6.10
--e ../botbuilder-python/libraries/botbuilder-schema
--e ../botbuilder-python/libraries/botframework-connector
--e ../botbuilder-python/libraries/botframework-streaming
--e ../botbuilder-python/libraries/botbuilder-core
--e ../botbuilder-python/libraries/botbuilder-ai
--e ../botbuilder-python/libraries/botbuilder-applicationinsights
--e ../botbuilder-python/libraries/botbuilder-dialogs
--e ../botbuilder-python/libraries/botbuilder-azure
--e ../botbuilder-python/libraries/botbuilder-integration-applicationinsights-aiohttp
--e ../botbuilder-python/libraries/botbuilder-adapters-slack
--e ../botbuilder-python/libraries/botbuilder-integration-aiohttp
--e ../botbuilder-python/libraries/botbuilder-testing
+-e ./libraries/botbuilder-schema
+-e ./libraries/botframework-connector
+-e ./libraries/botframework-streaming
+-e ./libraries/botbuilder-core
+-e ./libraries/botbuilder-ai
+-e ./libraries/botbuilder-applicationinsights
+-e ./libraries/botbuilder-dialogs
+-e ./libraries/botbuilder-azure
+-e ./libraries/botbuilder-integration-applicationinsights-aiohttp
+-e ./libraries/botbuilder-adapters-slack
+-e ./libraries/botbuilder-integration-aiohttp
+-e ./libraries/botbuilder-testing
