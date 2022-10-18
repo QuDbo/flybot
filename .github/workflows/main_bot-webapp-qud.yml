@@ -10,6 +10,7 @@ env:
   LUISAPIKEY: ${{secrets.LUISAPIKEY}}
   LUISAPPID: ${{secrets.LUISAPPID}}
   LUISENDPOINT: ${{secrets.LUISENDPOINT}}
+  VARTEST: "jfeljlzfjlezfjzel"
 
 on:
   push:
@@ -48,7 +49,7 @@ jobs:
       #       . 
       #       !venv/
       - name: Test env varaibles
-        run: python -c "import os; print(os.environ['LUISAPPID'])"
+        run: python -c "import os; print(os.environ['VARTEST'])"
 
       - name: Run app
         run: python app.py
