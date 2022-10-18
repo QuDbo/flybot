@@ -4,14 +4,6 @@
 
 name: Build and deploy Python app to Azure Web App - bot-webapp-qud
 
-env:
-  APPINSIGHTSINSTRUMENTATIONKEY: ${{secrets.APPINSIGHTSINSTRUMENTATIONKEY}}
-  LUISAPIHOSTNAME: ${{secrets.LUISAPIHOSTNAME}}
-  LUISAPIKEY: ${{secrets.LUISAPIKEY}}
-  LUISAPPID: ${{secrets.LUISAPPID}}
-  LUISENDPOINT: ${{secrets.LUISENDPOINT}}
-  VARTEST: "jfeljlzfjlezfjzel"
-
 on:
   push:
     branches:
@@ -22,6 +14,13 @@ jobs:
   build:
     environment: env_var_flybot
     runs-on: ubuntu-latest
+
+    env:
+      APPINSIGHTSINSTRUMENTATIONKEY: ${{secrets.APPINSIGHTSINSTRUMENTATIONKEY}}
+      LUISAPIHOSTNAME: ${{secrets.LUISAPIHOSTNAME}}
+      LUISAPIKEY: ${{secrets.LUISAPIKEY}}
+      LUISAPPID: ${{secrets.LUISAPPID}}
+      LUISENDPOINT: ${{secrets.LUISENDPOINT}}
 
     steps:
       - uses: actions/checkout@v2
