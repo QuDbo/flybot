@@ -8,6 +8,11 @@ class BookingDetails:
         destination: str = None,
         origin: str = None,
         travel_date: str = None,
+        return_date: str = None,
+        adults: int = None,
+        children: int = None,
+        ticket_class : str = None,
+        budget : int = None, 
         unsupported_airports=None,
     ):
         if unsupported_airports is None:
@@ -15,4 +20,9 @@ class BookingDetails:
         self.destination = destination
         self.origin = origin
         self.travel_date = travel_date
+        self.return_date = return_date
+        self.adults = adults
+        self.children = children
+        self.ticket_class = ticket_class
+        self.budget = budget
         self.unsupported_airports = unsupported_airports
