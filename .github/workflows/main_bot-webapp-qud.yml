@@ -20,7 +20,7 @@ jobs:
       LUISAPIHOSTNAME: ${{secrets.LUISAPIHOSTNAME}}
       LUISAPIKEY: ${{secrets.LUISAPIKEY}}
       LUISAPPID: ${{secrets.LUISAPPID}}
-      LUISENDPOINT: ${{secrets.LUISENDPOINT}}
+      # LUISENDPOINT: ${{secrets.LUISENDPOINT}}
 
     steps:
       - uses: actions/checkout@v2
@@ -38,17 +38,37 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
         
-      # # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
+      # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
       
-      # - name: Upload artifact for deployment jobs
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: python-app
-      #     path: |
-      #       . 
-      #       !venv/
+      - name: Upload artifact for deployment jobs
+        uses: actions/upload-artifact@v2
+        with:
+          name: python-app
+          path: |
+            . 
+            !venv/
+
       - name: Test env varaibles
         run: python -c "import os; print(os.environ['APPINSIGHTSINSTRUMENTATIONKEY'])"
 
-      - name: Run app
-        run: python app.py
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: "Production"
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v2
+        with:
+          name: python-app
+          path: .
+
+      - name: "Deploy to Azure Web App"
+        uses: azure/webapps-deploy@v2
+        id: deploy-to-webapp
+        with:
+          app-name: "FlyMeBotWebApp"
+          slot-name: "Production"
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_42FE683F8B6E4F22A949512F2BEF9E50 }}
