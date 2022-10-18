@@ -9,7 +9,7 @@ import os
 class DefaultConfig:
     """Configuration for the bot."""
 
-    PORT = 3978
+    PORT = 8000
     HOST = "0.0.0.0"
     APP_ID = os.environ.get("MICROSOFTAPPID", "")
     APP_PASSWORD = os.environ.get("MICROSOFTAPPPASSWORD", "")   
