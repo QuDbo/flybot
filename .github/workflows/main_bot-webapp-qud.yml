@@ -48,7 +48,7 @@ jobs:
       #       . 
       #       !venv/
       - name: Test env varaibles
-        run: python -c "import os; print(os.environ['VARTEST'])"
+        run: python -c "import os; print(os.environ['APPINSIGHTSINSTRUMENTATIONKEY'])"
 
       - name: Run app
         run: python app.py
