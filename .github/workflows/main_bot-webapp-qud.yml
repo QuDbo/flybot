@@ -4,6 +4,13 @@
 
 name: Build and deploy Python app to Azure Web App - bot-webapp-qud
 
+env:
+  APPINSIGHTSINSTRUMENTATIONKEY: ${{secrets.APPINSIGHTSINSTRUMENTATIONKEY}}
+  LUISAPIHOSTNAME: ${{secrets.LUISAPIHOSTNAME}}
+  LUISAPIKEY: ${{secrets.LUISAPIKEY}}
+  LUISAPPID: ${{secrets.LUISAPPID}}
+  LUISENDPOINT: ${{secrets.LUISENDPOINT}}
+
 on:
   push:
     branches:
@@ -12,6 +19,7 @@ on:
 
 jobs:
   build:
+    environment: env_var_flybot
     runs-on: ubuntu-latest
 
     steps:
@@ -30,15 +38,20 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
         
-      # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
+      # # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
       
-      - name: Upload artifact for deployment jobs
-        uses: actions/upload-artifact@v2
-        with:
-          name: python-app
-          path: |
-            . 
-            !venv/
+      # - name: Upload artifact for deployment jobs
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: python-app
+      #     path: |
+      #       . 
+      #       !venv/
+      - name: Test env varaibles
+        run: python -c "import os; print(os.environ['LUIS_APP_ID'])"
+
+      - name: Run app
+        run: python app.py
 
   deploy:
     runs-on: ubuntu-latest
