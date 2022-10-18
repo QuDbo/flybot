@@ -36,8 +36,6 @@ from flight_booking_recognizer import FlightBookingRecognizer
 
 CONFIG = DefaultConfig()
 
-print(CONFIG.APPINSIGHTS_INSTRUMENTATION_KEY)
-
 # Create adapter.
 # See https://aka.ms/about-bot-adapter to learn more about how bots work.
 SETTINGS = BotFrameworkAdapterSettings(CONFIG.APP_ID, CONFIG.APP_PASSWORD)
