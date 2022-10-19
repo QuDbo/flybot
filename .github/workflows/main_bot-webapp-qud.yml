@@ -13,7 +13,7 @@ on:
 env:
   AZURE_WEBAPP_NAME: bot-webapp-qud
   AZURE_WEBAPP_PACKAGE_PATH: '.'
-  AZURE_SLOT_NAME: staging
+  AZURE_SLOT_NAME: Production
 
 jobs:
   build:
