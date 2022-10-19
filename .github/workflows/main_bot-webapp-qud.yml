@@ -55,7 +55,7 @@ jobs:
       contents: none
     runs-on: ubuntu-latest
     needs: build
-    env:
+    environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
       AZURE_WEBAPP_NAME: bot-webapp-qud
