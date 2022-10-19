@@ -1,8 +1,5 @@
-aiohttp==3.7.4
-asyncio
 requests==2.23.0
 datatypes-date-time>=1.0.0.a1
-azure-cognitiveservices-language-luis>=0.2.0
 msrest>=0.6.10
 -e ./libraries/botbuilder-schema
 -e ./libraries/botframework-connector
@@ -16,3 +13,5 @@ msrest>=0.6.10
 -e ./libraries/botbuilder-adapters-slack
 -e ./libraries/botbuilder-integration-aiohttp
 -e ./libraries/botbuilder-testing
+aiohttp==3.7.4
+azure-cognitiveservices-language-luis>=0.2.0
