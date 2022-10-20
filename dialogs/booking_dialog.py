@@ -122,9 +122,10 @@ class BookingDialog(CancelAndHelpDialog):
         mini_intent, mini_luis_result = await LuisHelper.execute_luis_query(
             mini_recognizer, turn_context=previous_response
         )
-        
-        booking_details.adults = mini_luis_result.adults
-        booking_details.children = mini_luis_result.children
+        if mini_luis_result.adults:
+            booking_details.adults = mini_luis_result.adults
+        if mini_luis_result.children:
+            booking_details.children = mini_luis_result.children
         
         if booking_details.ticket_class is None:
             modif_text = "Do you want a sepcific seat class ?"
@@ -216,8 +217,16 @@ class BookingDialog(CancelAndHelpDialog):
         else:
             msg_class = " No specific seat class is demanded."
 
-        n_adult = int(booking_details.adults)
-        n_child = int(booking_details.children)
+        if booking_details.adults:
+            n_adult = int(booking_details.adults)
+        else:
+            n_adult=1
+        
+        if booking_details.children:
+            n_child = int(booking_details.children)
+        else:
+            n_child = 0
+
         if (n_adult>1) or (n_child>0):
             s_adult = "s" if (n_adult>1) else ""
             s_child = "ren" if (n_child>1) else ""

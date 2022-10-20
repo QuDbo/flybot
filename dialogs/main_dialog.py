@@ -139,9 +139,6 @@ class MainDialog(ComponentDialog):
             msg_txt = "I'm just a bot and my creator is not so smart..."
             message = MessageFactory.text(msg_txt, msg_txt, InputHints.ignoring_input)
             await step_context.context.send_activity(message)
-            msg_txt = f"id dialog : {self.id}"
-            message = MessageFactory.text(msg_txt, msg_txt, InputHints.ignoring_input)
-            await step_context.context.send_activity(message)
             prompt_message = "Can you explain me again your trip, like I'm a 3yo child ?"
             return await step_context.replace_dialog(self.id, prompt_message)
         
