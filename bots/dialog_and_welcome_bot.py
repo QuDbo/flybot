@@ -43,6 +43,7 @@ class DialogAndWelcomeBot(DialogBot):
                 welcome_card = self.create_adaptive_card_attachment()
                 response = self.create_response(turn_context.activity, welcome_card)
                 await turn_context.send_activity(response)
+                await turn_context.send_activity(f"Hello there { member.name }! ")
 
     def create_response(self, activity: Activity, attachment: Attachment):
         """Create an attachment message response."""

@@ -5,7 +5,7 @@
   "body": [
     {
       "type": "Image",
-      "url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtB3AwMUeNoq4gUBGe6Ocj8kyh3bXa9ZbV7u1fVKQoyKFHdkqU",
+      "url": "https://images4.alphacoders.com/196/thumb-1920-196996.jpg",
       "size": "stretch"
     },
     {
@@ -13,7 +13,7 @@
       "spacing": "medium",
       "size": "default",
       "weight": "bolder",
-      "text": "Welcome to Bot Framework!",
+      "text": "Greetings meatbag !",
       "wrap": true,
       "maxLines": 0
     },
@@ -21,26 +21,25 @@
       "type": "TextBlock",
       "size": "default",
       "isSubtle": "true",
-      "text": "Now that you have successfully run your bot, follow the links in this Adaptive Card to expand your knowledge of Bot Framework.",
+      "text": "I gonna help you leave this place (and maybe return).",
       "wrap": true,
       "maxLines": 0
-    }
-  ],
-  "actions": [
-    {
-      "type": "Action.OpenUrl",
-      "title": "Get an overview",
-      "url": "https://docs.microsoft.com/azure/bot-service/?view=azure-bot-service-4.0"
     },
     {
-      "type": "Action.OpenUrl",
-      "title": "Ask a question",
-      "url": "https://stackoverflow.com/questions/tagged/botframework"
+      "type": "TextBlock",
+      "size": "default",
+      "isSubtle": "true",
+      "text": "At any moment, type 'help' for some help.",
+      "wrap": true,
+      "maxLines": 0
     },
     {
-      "type": "Action.OpenUrl",
-      "title": "Learn how to deploy",
-      "url": "https://docs.microsoft.com/azure/bot-service/bot-builder-howto-deploy-azure?view=azure-bot-service-4.0"
+      "type": "TextBlock",
+      "size": "default",
+      "isSubtle": "true",
+      "text": "If I'm doing a poorly job, type 'cancel' or 'quit' to stop the massacre...",
+      "wrap": true,
+      "maxLines": 0
     }
   ]
 }

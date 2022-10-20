@@ -86,7 +86,7 @@ class MainDialog(ComponentDialog):
         intent, luis_result = await LuisHelper.execute_luis_query(
             self._luis_recognizer, step_context.context
         )
-
+        
         if intent == Intent.BOOK_FLIGHT.value and luis_result:
             # Show a warning for Origin and Destination if we can't resolve them.
             await MainDialog._show_warning_for_unsupported_cities(
@@ -96,12 +96,13 @@ class MainDialog(ComponentDialog):
             # Run the BookingDialog giving it whatever details we have from the LUIS call.
             return await step_context.begin_dialog(self._booking_dialog_id, luis_result)
 
-        if intent == Intent.GET_WEATHER.value:
-            get_weather_text = "TODO: get weather flow here"
-            get_weather_message = MessageFactory.text(
-                get_weather_text, get_weather_text, InputHints.ignoring_input
-            )
-            await step_context.context.send_activity(get_weather_message)
+        # # Create step for cancel
+        # if intent == Intent.GET_WEATHER.value:
+        #     get_weather_text = "TODO: get weather flow here"
+        #     get_weather_message = MessageFactory.text(
+        #         get_weather_text, get_weather_text, InputHints.ignoring_input
+        #     )
+        #     await step_context.context.send_activity(get_weather_message)
 
         else:
             didnt_understand_text = (
@@ -129,9 +130,23 @@ class MainDialog(ComponentDialog):
             msg_txt = "This is booked !"
             message = MessageFactory.text(msg_txt, msg_txt, InputHints.ignoring_input)
             await step_context.context.send_activity(message)
-
-        prompt_message = "What else can I do for you?"
-        return await step_context.replace_dialog(self.id, prompt_message)
+            prompt_message = "Is there something else I can do for you?"
+            return await step_context.replace_dialog(self.id, prompt_message)
+        else:
+            msg_txt = "Sorry that I didn't understand your request."
+            message = MessageFactory.text(msg_txt, msg_txt, InputHints.ignoring_input)
+            await step_context.context.send_activity(message)
+            msg_txt = "I'm just a bot and my creator is not so smart..."
+            message = MessageFactory.text(msg_txt, msg_txt, InputHints.ignoring_input)
+            await step_context.context.send_activity(message)
+            msg_txt = f"id dialog : {self.id}"
+            message = MessageFactory.text(msg_txt, msg_txt, InputHints.ignoring_input)
+            await step_context.context.send_activity(message)
+            prompt_message = "Can you explain me again your trip, like I'm a 3yo child ?"
+            return await step_context.replace_dialog(self.id, prompt_message)
+        
+        # prompt_message = "What else can I do for you?"
+        # return await step_context.replace_dialog(self.id, prompt_message)
 
     @staticmethod
     async def _show_warning_for_unsupported_cities(

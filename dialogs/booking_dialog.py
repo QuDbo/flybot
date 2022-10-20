@@ -9,6 +9,7 @@ from botbuilder.dialogs.prompts import ConfirmPrompt, TextPrompt, PromptOptions
 from botbuilder.core import MessageFactory, BotTelemetryClient, NullTelemetryClient
 from .cancel_and_help_dialog import CancelAndHelpDialog
 from .date_resolver_dialog import DateResolverDialog
+from .return_resolver_dialog import ReturnResolverDialog
 
 
 class BookingDialog(CancelAndHelpDialog):
@@ -46,6 +47,9 @@ class BookingDialog(CancelAndHelpDialog):
         self.add_dialog(ConfirmPrompt(ConfirmPrompt.__name__))
         self.add_dialog(
             DateResolverDialog(DateResolverDialog.__name__, self.telemetry_client)
+        )
+        self.add_dialog(
+            ReturnResolverDialog(ReturnResolverDialog.__name__, self.telemetry_client)
         )
         self.add_dialog(waterfall_dialog)
 
@@ -144,6 +148,8 @@ class BookingDialog(CancelAndHelpDialog):
 
         booking_details = step_context.options
 
+        print(f"Inspection  step context : {booking_details.travel_date}")
+
         # Capture the results of the previous step
         booking_details.budget = step_context.result
         if not booking_details.travel_date or self.is_ambiguous(
@@ -169,7 +175,7 @@ class BookingDialog(CancelAndHelpDialog):
             booking_details.return_date
         ):
             return await step_context.begin_dialog(
-                DateResolverDialog.__name__, booking_details.return_date
+                ReturnResolverDialog.__name__, booking_details.return_date
             )  # pylint: disable=line-too-long
 
         return await step_context.next(booking_details.return_date)

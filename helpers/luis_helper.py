@@ -141,6 +141,9 @@ class LuisHelper:
                 travel_date_entities = recognizer_result.entities.get("$instance", {}).get(
                     "Departure", []
                 )
+                # travel_date_entities = recognizer_result.entities.get("$instance", {}).get(
+                #     "Travel_date", []
+                # )
                 if len(travel_date_entities) > 0:
                     if recognizer_result.entities.get("Departure", ["today"])[0]:
                         result.travel_date = travel_date_entities[0]["text"]
@@ -150,6 +153,9 @@ class LuisHelper:
                 return_date_entities = recognizer_result.entities.get("$instance", {}).get(
                     "Arrival", []
                 )
+                # return_date_entities = recognizer_result.entities.get("$instance", {}).get(
+                #     "Return_date", []
+                # )
                 if len(return_date_entities) > 0:
                     if recognizer_result.entities.get("Arrival", ["tomorrow"])[0]:
                         result.return_date = return_date_entities[0]["text"]
