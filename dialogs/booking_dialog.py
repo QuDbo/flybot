@@ -11,6 +11,10 @@ from .cancel_and_help_dialog import CancelAndHelpDialog
 from .date_resolver_dialog import DateResolverDialog
 from .return_resolver_dialog import ReturnResolverDialog
 
+from flight_booking_recognizer import FlightBookingRecognizer
+from helpers.luis_helper import LuisHelper
+
+from config import DefaultConfig
 
 class BookingDialog(CancelAndHelpDialog):
     """Flight booking implementation."""
@@ -111,7 +115,17 @@ class BookingDialog(CancelAndHelpDialog):
         booking_details = step_context.options
 
         # Capture the response to the previous step's prompt
-        booking_details.adults = step_context.result
+        # previous_response = step_context.result
+        previous_response = step_context.context
+        mini_recognizer = FlightBookingRecognizer(DefaultConfig)
+        
+        mini_intent, mini_luis_result = await LuisHelper.execute_luis_query(
+            mini_recognizer, turn_context=previous_response
+        )
+        
+        booking_details.adults = mini_luis_result.adults
+        booking_details.children = mini_luis_result.children
+        
         if booking_details.ticket_class is None:
             modif_text = "Do you want a sepcific seat class ?"
             return await step_context.prompt(
@@ -147,8 +161,6 @@ class BookingDialog(CancelAndHelpDialog):
         This will use the DATE_RESOLVER_DIALOG."""
 
         booking_details = step_context.options
-
-        print(f"Inspection  step context : {booking_details.travel_date}")
 
         # Capture the results of the previous step
         booking_details.budget = step_context.result
