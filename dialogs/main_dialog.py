@@ -65,7 +65,7 @@ class MainDialog(ComponentDialog):
         message_text = (
             str(step_context.options)
             if step_context.options
-            else "What can I help you with today?"
+            else "Can you tell me about your trip ?"
         )
         prompt_message = MessageFactory.text(
             message_text, message_text, InputHints.expecting_input
@@ -81,7 +81,7 @@ class MainDialog(ComponentDialog):
             return await step_context.begin_dialog(
                 self._booking_dialog_id, BookingDetails()
             )
-
+        
         # Call LUIS and gather any potential booking details. (Note the TurnContext has the response to the prompt.)
         intent, luis_result = await LuisHelper.execute_luis_query(
             self._luis_recognizer, step_context.context
@@ -127,7 +127,7 @@ class MainDialog(ComponentDialog):
             # time_property = Timex(result.travel_date)
             # travel_date_msg = time_property.to_natural_language(datetime.now())
             # msg_txt = f"I have you booked to {result.destination} from {result.origin} on {result.travel_date}"
-            msg_txt = "This is booked !"
+            msg_txt = "This is (imaginary) booked !"
             message = MessageFactory.text(msg_txt, msg_txt, InputHints.ignoring_input)
             await step_context.context.send_activity(message)
             prompt_message = "Is there something else I can do for you?"

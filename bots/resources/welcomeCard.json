@@ -5,7 +5,7 @@
   "body": [
     {
       "type": "Image",
-      "url": "https://images4.alphacoders.com/196/thumb-1920-196996.jpg",
+      "url": "https://www.latercera.com/resizer/bmyvJHEs3R3fOU-hTWWM2cw7h5o=/900x600/filters:focal(384x213:394x203)/cloudfront-us-east-1.images.arcpublishing.com/copesa/TKAHPZ4KDBAKFFTPIROL6SPFVY.png",
       "size": "stretch"
     },
     {
@@ -21,7 +21,7 @@
       "type": "TextBlock",
       "size": "default",
       "isSubtle": "true",
-      "text": "I gonna help you leave this place (and maybe return).",
+      "text": "I'm a bot designed to help you book your tickets. But maybe I will spend your money on beer and cigars. Who knew ??",
       "wrap": true,
       "maxLines": 0
     },

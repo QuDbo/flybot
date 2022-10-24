@@ -63,7 +63,9 @@ class BookingDialog(CancelAndHelpDialog):
         self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
         """Prompt for destination."""
+        
         booking_details = step_context.options
+        booking_details.initial_demand = step_context.parent.result
 
         if booking_details.destination is None:
             modif_text = "To what city would you like to travel?"
@@ -250,13 +252,18 @@ class BookingDialog(CancelAndHelpDialog):
 
     async def final_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         """Complete the interaction and end the dialog."""
-        if step_context.result:
+        if (step_context.result):
             booking_details = step_context.options
-            booking_details.return_date = step_context.result
+            # booking_details.return_date = step_context.result
 
             return await step_context.end_dialog(booking_details)
-
-        return await step_context.end_dialog()
+        else:
+            # Bot has failed, report it to Insight
+            booking_details = step_context.options
+            properties = {'interpreted_options': booking_details.__dict__}
+            self.telemetry_client.track_trace("Bot failure", properties, "ERROR")
+            
+            return await step_context.end_dialog()
 
     def is_ambiguous(self, timex: str) -> bool:
         """Ensure time is correct."""

@@ -14,6 +14,7 @@ class BookingDetails:
         ticket_class : str = None,
         budget : int = None, 
         unsupported_airports=None,
+        initial_demand : str = None,
     ):
         if unsupported_airports is None:
             unsupported_airports = []
@@ -26,3 +27,4 @@ class BookingDetails:
         self.ticket_class = ticket_class
         self.budget = budget
         self.unsupported_airports = unsupported_airports
+        self.initial_demand = initial_demand

@@ -42,8 +42,12 @@ class DialogAndWelcomeBot(DialogBot):
             if member.id != turn_context.activity.recipient.id:
                 welcome_card = self.create_adaptive_card_attachment()
                 response = self.create_response(turn_context.activity, welcome_card)
+                if member.name:
+                    user_name = member.name
+                else:
+                    user_name = "fellow anonymous" 
                 await turn_context.send_activity(response)
-                await turn_context.send_activity(f"Hello there { member.name }! ")
+                await turn_context.send_activity(f"Hello there { user_name }! ")
 
     def create_response(self, activity: Activity, attachment: Attachment):
         """Create an attachment message response."""
