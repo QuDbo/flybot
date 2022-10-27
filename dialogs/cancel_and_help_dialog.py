@@ -11,6 +11,10 @@ from botbuilder.dialogs import (
 )
 from botbuilder.schema import ActivityTypes
 
+from flight_booking_recognizer import FlightBookingRecognizer
+from helpers.luis_helper import LuisHelper, Intent
+
+from config import DefaultConfig
 
 class CancelAndHelpDialog(ComponentDialog):
     """Implementation of handling cancel and help."""
@@ -51,5 +55,19 @@ class CancelAndHelpDialog(ComponentDialog):
             if text in ("cancel", "quit"):
                 await inner_dc.context.send_activity("Cancelling")
                 return await inner_dc.cancel_all_dialogs()
-
+            
+            # Capture the response to the previous step's prompt
+            # previous_response = step_context.result
+            previous_response = inner_dc.context
+            mini_recognizer = FlightBookingRecognizer(DefaultConfig)
+            
+            mini_intent, mini_luis_result = await LuisHelper.execute_luis_query(
+                mini_recognizer, turn_context=previous_response
+            )
+            
+            if mini_intent == Intent.GOODBYE.value :
+                await inner_dc.context.send_activity("Have a nice day !")
+                await inner_dc.context.send_activity("This conversation is over. Retype something or refresh to restart.")
+                return await inner_dc.cancel_all_dialogs()         
+                
         return None

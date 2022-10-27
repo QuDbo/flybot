@@ -4,12 +4,27 @@
 
 from datatypes_date_time.timex import Timex
 
-from botbuilder.dialogs import WaterfallDialog, WaterfallStepContext, DialogTurnResult
-from botbuilder.dialogs.prompts import ConfirmPrompt, TextPrompt, PromptOptions
+from botbuilder.dialogs import (
+    WaterfallDialog, 
+    WaterfallStepContext, 
+    DialogTurnResult
+)
+from botbuilder.dialogs.prompts import (
+    ConfirmPrompt, 
+    TextPrompt, 
+    PromptOptions,
+    ChoicePrompt
+)
+from botbuilder.dialogs.choices import Choice
 from botbuilder.core import MessageFactory, BotTelemetryClient, NullTelemetryClient
 from .cancel_and_help_dialog import CancelAndHelpDialog
 from .date_resolver_dialog import DateResolverDialog
 from .return_resolver_dialog import ReturnResolverDialog
+from .destination_resolver_dialog import DestinationResolverDialog
+from .origin_resolver_dialog import OriginResolverDialog
+from .passenger_resolver_dialog import PassengerResolverDialog
+from .child_resolver_dialog import ChildResolverDialog
+from .budget_resolver_dialog import BudgetResolverDialog
 
 from flight_booking_recognizer import FlightBookingRecognizer
 from helpers.luis_helper import LuisHelper
@@ -37,6 +52,8 @@ class BookingDialog(CancelAndHelpDialog):
                 self.destination_step,
                 self.origin_step,
                 self.passenger_step,
+                self.child_question_step,
+                self.child_step,
                 self.ticket_class_step,
                 self.budget_step,
                 self.travel_date_step,
@@ -49,11 +66,27 @@ class BookingDialog(CancelAndHelpDialog):
 
         self.add_dialog(text_prompt)
         self.add_dialog(ConfirmPrompt(ConfirmPrompt.__name__))
+        self.add_dialog(ChoicePrompt(ChoicePrompt.__name__))
         self.add_dialog(
             DateResolverDialog(DateResolverDialog.__name__, self.telemetry_client)
         )
         self.add_dialog(
             ReturnResolverDialog(ReturnResolverDialog.__name__, self.telemetry_client)
+        )
+        self.add_dialog(
+            DestinationResolverDialog(DestinationResolverDialog.__name__, self.telemetry_client)
+        )
+        self.add_dialog(
+            OriginResolverDialog(OriginResolverDialog.__name__, self.telemetry_client)
+        )
+        self.add_dialog(
+            PassengerResolverDialog(PassengerResolverDialog.__name__, self.telemetry_client)
+        )
+        self.add_dialog(
+            ChildResolverDialog(ChildResolverDialog.__name__, self.telemetry_client)
+        )
+        self.add_dialog(
+            BudgetResolverDialog(BudgetResolverDialog.__name__, self.telemetry_client)
         )
         self.add_dialog(waterfall_dialog)
 
@@ -63,97 +96,97 @@ class BookingDialog(CancelAndHelpDialog):
         self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
         """Prompt for destination."""
-        
         booking_details = step_context.options
-        booking_details.initial_demand = step_context.parent.result
 
         if booking_details.destination is None:
-            modif_text = "To what city would you like to travel?"
-            return await step_context.prompt(
-                TextPrompt.__name__,
-                PromptOptions(
-                    prompt=MessageFactory.text(modif_text)
-                ),
-            )  # pylint: disable=line-too-long,bad-continuation
-
+            return await step_context.begin_dialog(
+                DestinationResolverDialog.__name__, booking_details.destination
+            )
+            
         return await step_context.next(booking_details.destination)
 
     async def origin_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         """Prompt for origin city."""
         booking_details = step_context.options
-
         # Capture the response to the previous step's prompt
         booking_details.destination = step_context.result
+        
         if booking_details.origin is None:
-            modif_text = "From what city will you be travelling?"
-            return await step_context.prompt(
-                TextPrompt.__name__,
-                PromptOptions(
-                    prompt=MessageFactory.text(modif_text)
-                ),
-            )  # pylint: disable=line-too-long,bad-continuation
+            return await step_context.begin_dialog(
+                OriginResolverDialog.__name__, booking_details.origin
+            )
 
         return await step_context.next(booking_details.origin)
     
     async def passenger_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        """Prompt to specify the number of passengers."""
+        """Prompt to specify the number of adults."""
         booking_details = step_context.options
-
         # Capture the response to the previous step's prompt
         booking_details.origin = step_context.result
+        
         if booking_details.adults is None:
-            modif_text = "How many adults and children ?"
-            return await step_context.prompt(
-                TextPrompt.__name__,
-                PromptOptions(
-                    prompt=MessageFactory.text(modif_text)
-                ),
-            )  # pylint: disable=line-too-long,bad-continuation
+            return await step_context.begin_dialog(
+                PassengerResolverDialog.__name__, booking_details.adults
+            )
 
         return await step_context.next(booking_details.adults)
+
+    async def child_question_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+        """Prompt to specify if there are children."""
+        booking_details = step_context.options
+        # Capture the response to the previous step's prompt
+        booking_details.adults = step_context.result
+        
+        if booking_details.children is None:
+            # Offer a YES/NO prompt.
+            msg = "Is there any children ?"
+            return await step_context.prompt(
+                ConfirmPrompt.__name__, PromptOptions(prompt=MessageFactory.text(msg))
+            )
+    
+    async def child_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+        """Prompt to specify the number of children."""
+        booking_details = step_context.options
+        is_there_children = step_context.result
+        
+        booking_details.children = 0
+        if (is_there_children):
+            return await step_context.begin_dialog(
+                ChildResolverDialog.__name__, None
+            )
+        
+        return await step_context.next(booking_details.children)
 
     async def ticket_class_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         """Prompt to specify the budget."""
         booking_details = step_context.options
-
         # Capture the response to the previous step's prompt
-        # previous_response = step_context.result
-        previous_response = step_context.context
-        mini_recognizer = FlightBookingRecognizer(DefaultConfig)
-        
-        mini_intent, mini_luis_result = await LuisHelper.execute_luis_query(
-            mini_recognizer, turn_context=previous_response
-        )
-        if mini_luis_result.adults:
-            booking_details.adults = mini_luis_result.adults
-        if mini_luis_result.children:
-            booking_details.children = mini_luis_result.children
+        booking_details.children = step_context.result
         
         if booking_details.ticket_class is None:
-            modif_text = "Do you want a sepcific seat class ?"
+            list_of_choice = [Choice("Eco"),Choice("Business"),Choice("First"),Choice("Any")]
+            modif_text = "Do you want a specific seat class ?"
             return await step_context.prompt(
-                TextPrompt.__name__,
+                ChoicePrompt.__name__,
                 PromptOptions(
-                    prompt=MessageFactory.text(modif_text)
+                    prompt=MessageFactory.text(modif_text),
+                    choices=list_of_choice
                 ),
-            )  # pylint: disable=line-too-long,bad-continuation
+            )
 
         return await step_context.next(booking_details.ticket_class)
 
     async def budget_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         """Prompt to specify the budget."""
         booking_details = step_context.options
-
         # Capture the response to the previous step's prompt
-        booking_details.ticket_class = step_context.result
+        ticket_class = step_context.result.value
+        booking_details.ticket_class = None if ticket_class=="Any" else ticket_class
+        
         if booking_details.budget is None:
-            modif_text = "Do you have a maximal budget ?"
-            return await step_context.prompt(
-                TextPrompt.__name__,
-                PromptOptions(
-                    prompt=MessageFactory.text(modif_text)
-                ),
-            )  # pylint: disable=line-too-long,bad-continuation
+            return await step_context.begin_dialog(
+                BudgetResolverDialog.__name__, None
+            )
 
         return await step_context.next(booking_details.budget)
 
@@ -252,18 +285,17 @@ class BookingDialog(CancelAndHelpDialog):
 
     async def final_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         """Complete the interaction and end the dialog."""
+        booking_details = step_context.options
         if (step_context.result):
-            booking_details = step_context.options
-            # booking_details.return_date = step_context.result
-
-            return await step_context.end_dialog(booking_details)
+            # return await step_context.end_dialog(booking_details)
+            return await step_context.end_dialog(step_context.result)
         else:
             # Bot has failed, report it to Insight
-            booking_details = step_context.options
             properties = {'interpreted_options': booking_details.__dict__}
             self.telemetry_client.track_trace("Bot failure", properties, "ERROR")
             
-            return await step_context.end_dialog()
+            # return await step_context.end_dialog()
+            return await step_context.end_dialog(step_context.result)
 
     def is_ambiguous(self, timex: str) -> bool:
         """Ensure time is correct."""

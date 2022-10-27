@@ -96,22 +96,56 @@ class MainDialog(ComponentDialog):
             # Run the BookingDialog giving it whatever details we have from the LUIS call.
             return await step_context.begin_dialog(self._booking_dialog_id, luis_result)
 
-        # # Create step for cancel
-        # if intent == Intent.GET_WEATHER.value:
-        #     get_weather_text = "TODO: get weather flow here"
-        #     get_weather_message = MessageFactory.text(
-        #         get_weather_text, get_weather_text, InputHints.ignoring_input
-        #     )
-        #     await step_context.context.send_activity(get_weather_message)
+        elif intent == Intent.GREETING.value:
+            greeting_text = (
+                "Hi !"
+            )
+            greeting_message = MessageFactory.text(
+                greeting_text, greeting_text, InputHints.ignoring_input
+            )
+            await step_context.context.send_activity(greeting_message)
+            prompt_message = "Can you tell me about your trip ?"
+            return await step_context.replace_dialog(self.id, prompt_message)
+        
+        elif intent == Intent.GOODBYE.value:
+            goodbye_text = (
+                "Have a nice day !"
+            )
+            goodbye_message = MessageFactory.text(
+                goodbye_text, goodbye_text, InputHints.ignoring_input
+            )
+            await step_context.context.send_activity(goodbye_message)
+            
+            close_text = (
+                "This conversation is over. Retype something or refresh to restart."
+            )
+            close_message = MessageFactory.text(
+                close_text, close_text, InputHints.ignoring_input
+            )
+            await step_context.context.send_activity(close_message)
+            return await inner_dc.cancel_all_dialogs()
+            
+        elif intent == Intent.THANKYOU.value:
+            thank_text = (
+                "You're welcome."
+            )
+            thank_message = MessageFactory.text(
+                thank_text, thank_text, InputHints.ignoring_input
+            )
+            await step_context.context.send_activity(thank_message)
+            prompt_message = "Can you tell me about your trip ?"
+            return await step_context.replace_dialog(self.id, prompt_message)
 
         else:
-            didnt_understand_text = (
-                "Sorry, I didn't get that. Please try asking in a different way"
-            )
-            didnt_understand_message = MessageFactory.text(
-                didnt_understand_text, didnt_understand_text, InputHints.ignoring_input
-            )
-            await step_context.context.send_activity(didnt_understand_message)
+            # didnt_understand_text = (
+            #     "Sorry, I didn't get that. Please try asking in a different way."
+            # )
+            # didnt_understand_message = MessageFactory.text(
+            #     didnt_understand_text, didnt_understand_text, InputHints.ignoring_input
+            # )
+            # await step_context.context.send_activity(didnt_understand_message)
+            prompt_message = "Sorry, I didn't get that. Please try asking in a different way."
+            return await step_context.replace_dialog(self.id, prompt_message)
 
         return await step_context.next(None)
 
@@ -119,32 +153,24 @@ class MainDialog(ComponentDialog):
         # If the child dialog ("BookingDialog") was cancelled or the user failed to confirm,
         # the Result here will be null.
         if step_context.result is not None:
-            result = step_context.result
-
-            # Now we have all the booking details call the booking service.
-
-            # If the call to the booking service was successful tell the user.
-            # time_property = Timex(result.travel_date)
-            # travel_date_msg = time_property.to_natural_language(datetime.now())
-            # msg_txt = f"I have you booked to {result.destination} from {result.origin} on {result.travel_date}"
-            msg_txt = "This is (imaginary) booked !"
-            message = MessageFactory.text(msg_txt, msg_txt, InputHints.ignoring_input)
-            await step_context.context.send_activity(message)
-            prompt_message = "Is there something else I can do for you?"
-            return await step_context.replace_dialog(self.id, prompt_message)
-        else:
-            msg_txt = "Sorry that I didn't understand your request."
-            message = MessageFactory.text(msg_txt, msg_txt, InputHints.ignoring_input)
-            await step_context.context.send_activity(message)
-            msg_txt = "I'm just a bot and my creator is not so smart..."
-            message = MessageFactory.text(msg_txt, msg_txt, InputHints.ignoring_input)
-            await step_context.context.send_activity(message)
-            prompt_message = "Can you explain me again your trip, like I'm a 3yo child ?"
-            return await step_context.replace_dialog(self.id, prompt_message)
-        
-        # prompt_message = "What else can I do for you?"
-        # return await step_context.replace_dialog(self.id, prompt_message)
-
+            if (step_context.result):
+                msg_txt = "This is (imaginary) booked !"
+                message = MessageFactory.text(msg_txt, msg_txt, InputHints.ignoring_input)
+                await step_context.context.send_activity(message)
+                prompt_message = "Is there something else I can do for you?"
+                return await step_context.replace_dialog(self.id, prompt_message)
+            else:
+                msg_txt = "Sorry that I didn't understand your request."
+                message = MessageFactory.text(msg_txt, msg_txt, InputHints.ignoring_input)
+                await step_context.context.send_activity(message)
+                msg_txt = "I'm just a bot and my creator is not so smart..."
+                message = MessageFactory.text(msg_txt, msg_txt, InputHints.ignoring_input)
+                await step_context.context.send_activity(message)
+                prompt_message = "Can you explain me again your trip, like I'm a 3yo child ?"
+                return await step_context.replace_dialog(self.id, prompt_message)
+            
+        return await step_context.end_dialog()
+    
     @staticmethod
     async def _show_warning_for_unsupported_cities(
         context: TurnContext, luis_result: BookingDetails

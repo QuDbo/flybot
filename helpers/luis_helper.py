@@ -14,7 +14,9 @@ class Intent(Enum):
     # BOOK_FLIGHT = "BookFlight"
     BOOK_FLIGHT = "BookingFlight"
     CANCEL = "Cancel"
-    GET_WEATHER = "GetWeather"
+    GREETING = "greeting"
+    GOODBYE = "goodbye"
+    THANKYOU = "thankyou"
     NONE_INTENT = "NoneIntent"
 
 
@@ -56,7 +58,7 @@ class LuisHelper:
 
             if intent == Intent.BOOK_FLIGHT.value:
                 result = BookingDetails()
-
+                result.initial_demand = recognizer_result.text
                 # We need to get the result from the LUIS JSON which at every level returns an array.
                 # to_entities = recognizer_result.entities.get("$instance", {}).get(
                     # "To", []
