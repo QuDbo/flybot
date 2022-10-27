@@ -37,6 +37,22 @@ jobs:
         
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
       
+      - name: test of LUIS
+        env :
+          APPINSIGHTSINSTRUMENTATIONKEY: ${{ secrets.APPINSIGHTSINSTRUMENTATIONKEY }}
+          LUISAPIKEY: ${{ LUISAPIKEY }}
+          LUISAPIHOSTNAME: ${{ LUISAPIHOSTNAME }}
+          LUISAPPID: ${{ LUISAPPID }}
+        run: pytest test/test_luis_response.py
+      
+      # - name: test of conversation
+      #   env :
+      #     APPINSIGHTSINSTRUMENTATIONKEY: ${{ secrets.APPINSIGHTSINSTRUMENTATIONKEY }}
+      #     LUISAPIKEY: ${{ LUISAPIKEY }}
+      #     LUISAPIHOSTNAME: ${{ LUISAPIHOSTNAME }}
+      #     LUISAPPID: ${{ LUISAPPID }}
+      #   run: pytest test/test_conversation.py
+
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v2
         with:
