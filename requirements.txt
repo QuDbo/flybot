@@ -16,3 +16,4 @@ msrest>=0.6.10
 aiohttp==3.7.4
 azure-cognitiveservices-language-luis>=0.2.0
 pytest
+aiounittest
