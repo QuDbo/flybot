@@ -75,17 +75,20 @@ class TestLuisResponse(aiounittest.AsyncTestCase):
         
         # Testing Entities from examples
         # Use BookingDetails to fill the empty entities
-        test = BookingDetails(destination="Paris")
+        test = BookingDetails(destination="Paris",
+                              initial_demand="I want to go to Paris")
         await adapter.test("I want to go to Paris",
                            json.dumps(test.__dict__)
                            )
         test = BookingDetails(destination="Paris",
-                                          origin="London",
-                                          budget="400 $")
-        await adapter.test("Get me to paris from london for less than 400$.",
+                              origin="London",
+                              budget="400 $",
+                              initial_demand="I want to go to Paris from london for less than 400$."
+                              )
+        await adapter.test("I want to go to Paris from london for less than 400$.",
                            json.dumps(test.__dict__)
                            )
-        test = BookingDetails()
+        test = BookingDetails(initial_demand="We would like to go on vacation")
         await adapter.test("We would like to go on vacation",
                            json.dumps(test.__dict__)
                            )
