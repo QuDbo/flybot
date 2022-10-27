@@ -40,9 +40,9 @@ jobs:
       - name: test of LUIS
         env :
           APPINSIGHTSINSTRUMENTATIONKEY: ${{ secrets.APPINSIGHTSINSTRUMENTATIONKEY }}
-          LUISAPIKEY: ${{ LUISAPIKEY }}
-          LUISAPIHOSTNAME: ${{ LUISAPIHOSTNAME }}
-          LUISAPPID: ${{ LUISAPPID }}
+          LUISAPIKEY: ${{ secrets.LUISAPIKEY }}
+          LUISAPIHOSTNAME: ${{ secrets.LUISAPIHOSTNAME }}
+          LUISAPPID: ${{ secrets.LUISAPPID }}
         run: pytest test/test_luis_response.py
       
       # - name: test of conversation
