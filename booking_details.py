@@ -15,6 +15,10 @@ class BookingDetails:
         budget : int = None, 
         unsupported_airports=None,
         initial_demand : str = None,
+        trace_input=[],
+        geo=[],
+        datetimeV2=[],
+        number=[],
     ):
         if unsupported_airports is None:
             unsupported_airports = []
@@ -28,3 +32,7 @@ class BookingDetails:
         self.budget = budget
         self.unsupported_airports = unsupported_airports
         self.initial_demand = initial_demand
+        self.trace_input = trace_input
+        self.geo = geo
+        self.datetimeV2 = datetimeV2
+        self.number=number

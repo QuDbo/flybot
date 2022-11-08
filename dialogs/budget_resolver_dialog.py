@@ -72,6 +72,7 @@ class BudgetResolverDialog(CancelAndHelpDialog):
         self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
         user_response = step_context.context
+        
         # We should have a response, send it to luis  
         mini_recognizer = FlightBookingRecognizer(DefaultConfig)
         mini_intent, mini_luis_result = await LuisHelper.execute_luis_query(
@@ -80,14 +81,19 @@ class BudgetResolverDialog(CancelAndHelpDialog):
 
         if mini_intent == Intent.BOOK_FLIGHT.value:
             if mini_luis_result.budget:
-                return await step_context.next(mini_luis_result.budget)
-            else:
-                amount = mini_luis_result.initial_demand
-                try:
-                    amount=int(amount)
-                    return await step_context.next(str(amount)+" €")
-                except:
-                    pass
+                to_return = {
+                    'step_value' : mini_luis_result.budget,
+                    'input_user' : mini_luis_result.initial_demand
+                }
+                return await step_context.next(to_return)
+                # return await step_context.next(mini_luis_result.budget)
+            elif len(mini_luis_result.number)>0:
+                to_return = {
+                    'step_value' : mini_luis_result.number[-1],
+                    'input_user' : mini_luis_result.initial_demand
+                }
+                return await step_context.next(to_return)
+            
         if mini_intent == Intent.GREETING.value :
             greeting_text = (
                 "Hi !"

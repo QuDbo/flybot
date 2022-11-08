@@ -31,6 +31,8 @@ from helpers.luis_helper import LuisHelper
 
 from config import DefaultConfig
 
+import json
+
 class BookingDialog(CancelAndHelpDialog):
     """Flight booking implementation."""
 
@@ -97,45 +99,64 @@ class BookingDialog(CancelAndHelpDialog):
     ) -> DialogTurnResult:
         """Prompt for destination."""
         booking_details = step_context.options
-
+        
         if booking_details.destination is None:
             return await step_context.begin_dialog(
                 DestinationResolverDialog.__name__, booking_details.destination
             )
-            
-        return await step_context.next(booking_details.destination)
+        
+        to_return = {
+            'step_value' : booking_details.destination,
+            'input_user' : 'destination value already interpreted by LUIS'
+        }    
+        return await step_context.next(to_return)
 
     async def origin_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         """Prompt for origin city."""
         booking_details = step_context.options
         # Capture the response to the previous step's prompt
-        booking_details.destination = step_context.result
+        booking_details.destination = step_context.result['step_value']
+        booking_details.trace_input += [step_context.result['input_user']]
         
         if booking_details.origin is None:
             return await step_context.begin_dialog(
                 OriginResolverDialog.__name__, booking_details.origin
             )
-
-        return await step_context.next(booking_details.origin)
+        
+        to_return = {
+            'step_value' : booking_details.origin,
+            'input_user' : 'origin value already interpreted by LUIS'
+        }    
+        return await step_context.next(to_return)
+        # return await step_context.next(booking_details.origin)
     
     async def passenger_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         """Prompt to specify the number of adults."""
         booking_details = step_context.options
         # Capture the response to the previous step's prompt
-        booking_details.origin = step_context.result
+        booking_details.origin = step_context.result['step_value']
+        booking_details.trace_input += [step_context.result['input_user']]
+        # booking_details.origin = step_context.result
         
         if booking_details.adults is None:
             return await step_context.begin_dialog(
                 PassengerResolverDialog.__name__, booking_details.adults
             )
 
-        return await step_context.next(booking_details.adults)
+        to_return = {
+            'step_value' : booking_details.adults,
+            'input_user' : 'nb of adults value already interpreted by LUIS'
+        }    
+        return await step_context.next(to_return)
+        # return await step_context.next(booking_details.adults)
 
     async def child_question_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         """Prompt to specify if there are children."""
         booking_details = step_context.options
         # Capture the response to the previous step's prompt
-        booking_details.adults = step_context.result
+        booking_details.adults = step_context.result['step_value']
+        booking_details.trace_input += [step_context.result['input_user']]
+        # booking_details.adults = step_context.result
         
         if booking_details.children is None:
             # Offer a YES/NO prompt.
@@ -143,25 +164,40 @@ class BookingDialog(CancelAndHelpDialog):
             return await step_context.prompt(
                 ConfirmPrompt.__name__, PromptOptions(prompt=MessageFactory.text(msg))
             )
+        
+        return await step_context.next(booking_details.children)
+        
     
     async def child_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         """Prompt to specify the number of children."""
+        
         booking_details = step_context.options
         is_there_children = step_context.result
         
-        booking_details.children = 0
-        if (is_there_children):
-            return await step_context.begin_dialog(
-                ChildResolverDialog.__name__, None
-            )
+        if isinstance(is_there_children, bool):
+            booking_details.children = 0
+            if (is_there_children):
+                return await step_context.begin_dialog(
+                    ChildResolverDialog.__name__, None
+                )
+            input_user = 'Confirm prompt to No'
+        else:
+            input_user = 'nb of children value already interpreted by LUIS'
         
-        return await step_context.next(booking_details.children)
+        to_return = {
+            'step_value' : booking_details.children,
+            'input_user' : input_user
+        }    
+        return await step_context.next(to_return)
+        # return await step_context.next(booking_details.children)
 
     async def ticket_class_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        """Prompt to specify the budget."""
+        """Prompt to specify the ticket class."""
         booking_details = step_context.options
         # Capture the response to the previous step's prompt
-        booking_details.children = step_context.result
+        booking_details.children = step_context.result['step_value']
+        booking_details.trace_input += [step_context.result['input_user']]
+        # booking_details.children = step_context.result
         
         if booking_details.ticket_class is None:
             list_of_choice = [Choice("Eco"),Choice("Business"),Choice("First"),Choice("Any")]
@@ -174,21 +210,38 @@ class BookingDialog(CancelAndHelpDialog):
                 ),
             )
 
-        return await step_context.next(booking_details.ticket_class)
+        to_return = {
+            'step_value' : booking_details.ticket_class,
+            'input_user' : 'destination value already interpreted by LUIS'
+        }    
+        return await step_context.next(to_return)
+        # return await step_context.next(booking_details.ticket_class)
 
     async def budget_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         """Prompt to specify the budget."""
+        
         booking_details = step_context.options
         # Capture the response to the previous step's prompt
-        ticket_class = step_context.result.value
-        booking_details.ticket_class = None if ticket_class=="Any" else ticket_class
+        
+        try :
+            ticket_class = step_context.result['step_value']
+            booking_details.trace_input += [step_context.result['input_user']]
+        except :
+            ticket_class = step_context.result.value
+            booking_details.ticket_class = None if ticket_class=="Any" else ticket_class
+            booking_details.trace_input += ["Choice made by select prompt"]
         
         if booking_details.budget is None:
             return await step_context.begin_dialog(
                 BudgetResolverDialog.__name__, None
             )
 
-        return await step_context.next(booking_details.budget)
+        to_return = {
+            'step_value' : booking_details.budget,
+            'input_user' : 'destination value already interpreted by LUIS'
+        }    
+        return await step_context.next(to_return)
+        # return await step_context.next(booking_details.budget)
 
     async def travel_date_step(
         self, step_context: WaterfallStepContext
@@ -199,7 +252,10 @@ class BookingDialog(CancelAndHelpDialog):
         booking_details = step_context.options
 
         # Capture the results of the previous step
-        booking_details.budget = step_context.result
+        booking_details.budget = step_context.result['step_value']
+        booking_details.trace_input += [step_context.result['input_user']]
+        # booking_details.budget = step_context.result
+        
         if not booking_details.travel_date or self.is_ambiguous(
             booking_details.travel_date
         ):
@@ -207,7 +263,12 @@ class BookingDialog(CancelAndHelpDialog):
                 DateResolverDialog.__name__, booking_details.travel_date
             )  # pylint: disable=line-too-long
 
-        return await step_context.next(booking_details.travel_date)
+        to_return = {
+            'step_value' : booking_details.travel_date,
+            'input_user' : 'destination value already interpreted by LUIS'
+        }    
+        return await step_context.next(to_return)
+        # return await step_context.next(booking_details.travel_date)
     
     async def return_date_step(
         self, step_context: WaterfallStepContext
@@ -218,7 +279,10 @@ class BookingDialog(CancelAndHelpDialog):
         booking_details = step_context.options
 
         # Capture the results of the previous step
-        booking_details.travel_date = step_context.result
+        booking_details.travel_date = step_context.result['step_value']
+        booking_details.trace_input += [step_context.result['input_user']]
+        # booking_details.travel_date = step_context.result
+        
         if not booking_details.return_date or self.is_ambiguous(
             booking_details.return_date
         ):
@@ -226,7 +290,12 @@ class BookingDialog(CancelAndHelpDialog):
                 ReturnResolverDialog.__name__, booking_details.return_date
             )  # pylint: disable=line-too-long
 
-        return await step_context.next(booking_details.return_date)
+        to_return = {
+            'step_value' : booking_details.return_date,
+            'input_user' : 'destination value already interpreted by LUIS'
+        }    
+        return await step_context.next(to_return)
+        # return await step_context.next(booking_details.return_date)
 
     async def confirm_step(
         self, step_context: WaterfallStepContext
@@ -235,8 +304,10 @@ class BookingDialog(CancelAndHelpDialog):
         booking_details = step_context.options
 
         # Capture the results of the previous step
-        booking_details.return_date = step_context.result
-
+        booking_details.return_date = step_context.result['step_value']
+        booking_details.trace_input += [step_context.result['input_user']]
+        # booking_details.return_date = step_context.result
+        
         if booking_details.return_date:
             msg_return = f" You want to return on { booking_details.return_date}."
         else:
@@ -286,13 +357,14 @@ class BookingDialog(CancelAndHelpDialog):
     async def final_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         """Complete the interaction and end the dialog."""
         booking_details = step_context.options
+        
         if (step_context.result):
             # return await step_context.end_dialog(booking_details)
             return await step_context.end_dialog(step_context.result)
         else:
             # Bot has failed, report it to Insight
             properties = {'interpreted_options': booking_details.__dict__}
-            self.telemetry_client.track_trace("Bot failure", properties, "ERROR")
+            self.telemetry_client.track_trace("Bot failure", json.dumps(properties), "ERROR")
             
             # return await step_context.end_dialog()
             return await step_context.end_dialog(step_context.result)

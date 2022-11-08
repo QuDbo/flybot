@@ -59,6 +59,7 @@ class LuisHelper:
             if intent == Intent.BOOK_FLIGHT.value:
                 result = BookingDetails()
                 result.initial_demand = recognizer_result.text
+                result.resolver_dialog = []
                 # We need to get the result from the LUIS JSON which at every level returns an array.
                 # to_entities = recognizer_result.entities.get("$instance", {}).get(
                     # "To", []
@@ -100,20 +101,7 @@ class LuisHelper:
                 )
                 if len(max_budget_entities) > 0:
                     if recognizer_result.entities.get("Budget", [0])[0]:
-                        max_budget = max_budget_entities[0]["text"]
-                        budget_re = re.search("(\d+)",max_budget)
-                        if budget_re:
-                            amount = int(budget_re.group(1))
-                        currency_re = re.search("([$£€])",max_budget)
-                        if currency_re:
-                            currency = currency_re.group(1)
-                        if amount:
-                            budget_str = f"{amount} "
-                            if currency:
-                                budget_str += f"{currency}"
-                        else:
-                            budget_str = max_budget
-                        result.budget = budget_str
+                        result.budget = max_budget_entities[0]["text"]
                 
                 # number of adults
                 adult_entities = recognizer_result.entities.get("$instance", {}).get(
@@ -141,42 +129,63 @@ class LuisHelper:
                         
                 # travel date
                 travel_date_entities = recognizer_result.entities.get("$instance", {}).get(
-                    "Departure", []
+                    "Travel date", []
                 )
-                # travel_date_entities = recognizer_result.entities.get("$instance", {}).get(
-                #     "Travel_date", []
-                # )
                 if len(travel_date_entities) > 0:
-                    if recognizer_result.entities.get("Departure", ["today"])[0]:
+                    if recognizer_result.entities.get("Travel Date", ["today"])[0]:
                         result.travel_date = travel_date_entities[0]["text"]
-                        print(f"departure : {result.travel_date}")
                 
                 # return date
                 return_date_entities = recognizer_result.entities.get("$instance", {}).get(
-                    "Arrival", []
+                    "Return date", []
                 )
-                # return_date_entities = recognizer_result.entities.get("$instance", {}).get(
-                #     "Return_date", []
-                # )
                 if len(return_date_entities) > 0:
-                    if recognizer_result.entities.get("Arrival", ["tomorrow"])[0]:
+                    if recognizer_result.entities.get("Return date", ["tomorrow"])[0]:
                         result.return_date = return_date_entities[0]["text"]
-                        print(f"return : {result.return_date}")
+                
+                # geography entities
+                geography_entities = recognizer_result.entities.get("$instance", {}).get(
+                    "geographyV2_city", []
+                )
+                if len(geography_entities) > 0:
+                    if recognizer_result.entities.get("geographyV2_city", ["Neverland"])[0]:
+                        for geo in geography_entities:
+                            result.geo += [geo["text"].capitalize()]
+                            
+                # datetime entities
+                dt_entities = recognizer_result.entities.get("$instance", {}).get(
+                    "datetime", []
+                )
+                if len(dt_entities) > 0:
+                    if recognizer_result.entities.get("datetimeV2", ["today"])[0]:
+                        for date in dt_entities:
+                            result.datetimeV2 += [date["text"]]
+                            
+                # number entities
+                nb_entities = recognizer_result.entities.get("$instance", {}).get(
+                    "number", []
+                )
+                if len(nb_entities) > 0:
+                    if recognizer_result.entities.get("number", [0])[0]:
+                        for nb in nb_entities:
+                            result.number += [nb["text"]]
                         
-                # This value will be a TIMEX. And we are only interested in a Date so grab the first result and drop
-                # the Time part. TIMEX is a format that represents DateTime expressions that include some ambiguity.
-                # e.g. missing a Year.
-                date_entities = recognizer_result.entities.get("datetime", [])
-                if date_entities:
-                    timex = date_entities[0]["timex"]
+                # # Add some rule to verify stuff or interpreted more ?
+                        
+                # # # This value will be a TIMEX. And we are only interested in a Date so grab the first result and drop
+                # # # the Time part. TIMEX is a format that represents DateTime expressions that include some ambiguity.
+                # # # e.g. missing a Year.
+                # # date_entities = recognizer_result.entities.get("datetime", [])
+                # # if date_entities:
+                # #     timex = date_entities[0]["timex"]
 
-                    if timex:
-                        datetime = timex[0].split("T")[0]
+                # #     if timex:
+                # #         datetime = timex[0].split("T")[0]
 
-                        result.travel_date = datetime
+                # #         result.travel_date = datetime
 
-                else:
-                    result.travel_date = None
+                # # else:
+                # #     result.travel_date = None
 
         except Exception as exception:
             print(exception)

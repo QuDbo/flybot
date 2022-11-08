@@ -77,10 +77,20 @@ class DestinationResolverDialog(CancelAndHelpDialog):
         mini_intent, mini_luis_result = await LuisHelper.execute_luis_query(
                 mini_recognizer, turn_context=user_response
         )
-
+        
         if mini_intent == Intent.BOOK_FLIGHT.value:
             if mini_luis_result.destination:
-                return await step_context.next(mini_luis_result.destination)
+                to_return = {
+                    'step_value' : mini_luis_result.destination,
+                    'input_user' : mini_luis_result.initial_demand
+                }
+                return await step_context.next(to_return)
+            elif len(mini_luis_result.geo)>0:
+                to_return = {
+                    'step_value' : mini_luis_result.geo[-1],
+                    'input_user' : mini_luis_result.initial_demand
+                }
+                return await step_context.next(to_return)
                 
         if mini_intent == Intent.GREETING.value :
             greeting_text = (

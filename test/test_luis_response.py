@@ -76,6 +76,7 @@ class TestLuisResponse(aiounittest.AsyncTestCase):
         # Testing Entities from examples
         # Use BookingDetails to fill the empty entities
         test = BookingDetails(destination="Paris",
+                              geo=["Paris"],
                               initial_demand="I want to go to Paris")
         await adapter.test("I want to go to Paris",
                            json.dumps(test.__dict__)
@@ -83,6 +84,8 @@ class TestLuisResponse(aiounittest.AsyncTestCase):
         test = BookingDetails(destination="Paris",
                               origin="London",
                               budget="400 $",
+                              geo=["Paris","London"],
+                              number=["400"]
                               initial_demand="I want to go to Paris from london for less than 400$."
                               )
         await adapter.test("I want to go to Paris from london for less than 400$.",

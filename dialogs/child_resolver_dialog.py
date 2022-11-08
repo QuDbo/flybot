@@ -72,22 +72,29 @@ class ChildResolverDialog(CancelAndHelpDialog):
         self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
         user_response = step_context.context
+        
         # We should have a response, send it to luis  
         mini_recognizer = FlightBookingRecognizer(DefaultConfig)
+
         mini_intent, mini_luis_result = await LuisHelper.execute_luis_query(
                 mini_recognizer, turn_context=user_response
         )
 
         if mini_intent == Intent.BOOK_FLIGHT.value:
             if mini_luis_result.children:
-                return await step_context.next(mini_luis_result.children)
-            else:
-                nb_child = mini_luis_result.initial_demand
-                try:
-                    nb_child=int(nb_child)
-                    return await step_context.next(str(nb_child))
-                except:
-                    pass
+                to_return = {
+                    'step_value' : mini_luis_result.children,
+                    'input_user' : mini_luis_result.initial_demand
+                }
+                return await step_context.next(to_return)
+                # return await step_context.next(mini_luis_result.children)
+            elif len(mini_luis_result.number)>0:
+                to_return = {
+                    'step_value' : mini_luis_result.number[-1],
+                    'input_user' : mini_luis_result.initial_demand
+                }
+                return await step_context.next(to_return)
+                
         if mini_intent == Intent.GREETING.value :
             greeting_text = (
                 "Hi !"

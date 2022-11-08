@@ -80,14 +80,19 @@ class PassengerResolverDialog(CancelAndHelpDialog):
 
         if mini_intent == Intent.BOOK_FLIGHT.value:
             if mini_luis_result.adults:
-                return await step_context.next(mini_luis_result.adults)
-            else:
-                nb_adult = mini_luis_result.initial_demand
-                try:
-                    nb_adult=int(nb_adult)
-                    return await step_context.next(str(nb_adult))
-                except:
-                    pass
+                to_return = {
+                    'step_value' : mini_luis_result.adults,
+                    'input_user' : mini_luis_result.initial_demand
+                }
+                return await step_context.next(to_return)
+                # return await step_context.next(mini_luis_result.adults)
+            elif len(mini_luis_result.number)>0:
+                to_return = {
+                    'step_value' : mini_luis_result.number[-1],
+                    'input_user' : mini_luis_result.initial_demand
+                }
+                return await step_context.next(to_return)
+                
         if mini_intent == Intent.GREETING.value :
             greeting_text = (
                 "Hi !"

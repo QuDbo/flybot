@@ -81,7 +81,7 @@ class MainDialog(ComponentDialog):
             return await step_context.begin_dialog(
                 self._booking_dialog_id, BookingDetails()
             )
-        
+
         # Call LUIS and gather any potential booking details. (Note the TurnContext has the response to the prompt.)
         intent, luis_result = await LuisHelper.execute_luis_query(
             self._luis_recognizer, step_context.context
