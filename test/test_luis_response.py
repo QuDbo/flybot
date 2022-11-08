@@ -85,7 +85,7 @@ class TestLuisResponse(aiounittest.AsyncTestCase):
                               origin="London",
                               budget="400 $",
                               geo=["Paris","London"],
-                              number=["400"]
+                              number=["400"],
                               initial_demand="I want to go to Paris from london for less than 400$."
                               )
         await adapter.test("I want to go to Paris from london for less than 400$.",
