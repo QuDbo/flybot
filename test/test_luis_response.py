@@ -61,7 +61,7 @@ class TestLuisResponse(aiounittest.AsyncTestCase):
                            "thankyou"
                            )
     
-    async def test_entities_recognition(self):
+    async def test_entities_recognition_1(self):
         # LUIS Configuration like in the bot 
         test_recognizer = FlightBookingRecognizer(DefaultConfig)
         
@@ -81,9 +81,22 @@ class TestLuisResponse(aiounittest.AsyncTestCase):
         await adapter.test("I want to go to Paris",
                            json.dumps(test.__dict__)
                            )
+        
+        
+    async def test_entities_recognition_2(self):
+        # LUIS Configuration like in the bot 
+        test_recognizer = FlightBookingRecognizer(DefaultConfig)
+        
+        async def exec_test(turn_context : TurnContext):
+            test_intent, test_luis_result = await LuisHelper.execute_luis_query(
+                test_recognizer, turn_context=turn_context
+            )
+            await turn_context.send_activity(json.dumps(test_luis_result.__dict__))
+
+        adapter = TestAdapter(exec_test)
         test = BookingDetails(destination="Paris",
                               origin="London",
-                              budget="400 $",
+                              budget="400 $ .",
                               geo=["Paris","London"],
                               number=["400"],
                               initial_demand="I want to go to Paris from london for less than 400$."
@@ -91,6 +104,18 @@ class TestLuisResponse(aiounittest.AsyncTestCase):
         await adapter.test("I want to go to Paris from london for less than 400$.",
                            json.dumps(test.__dict__)
                            )
+    
+    async def test_entities_recognition_3(self):
+        # LUIS Configuration like in the bot 
+        test_recognizer = FlightBookingRecognizer(DefaultConfig)
+        
+        async def exec_test(turn_context : TurnContext):
+            test_intent, test_luis_result = await LuisHelper.execute_luis_query(
+                test_recognizer, turn_context=turn_context
+            )
+            await turn_context.send_activity(json.dumps(test_luis_result.__dict__))
+
+        adapter = TestAdapter(exec_test)
         test = BookingDetails(initial_demand="We would like to go on vacation")
         await adapter.test("We would like to go on vacation",
                            json.dumps(test.__dict__)
