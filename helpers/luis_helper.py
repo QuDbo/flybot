@@ -59,7 +59,6 @@ class LuisHelper:
             if intent == Intent.BOOK_FLIGHT.value:
                 result = BookingDetails()
                 result.initial_demand = recognizer_result.text
-                result.resolver_dialog = []
                 # We need to get the result from the LUIS JSON which at every level returns an array.
                 # to_entities = recognizer_result.entities.get("$instance", {}).get(
                     # "To", []
@@ -157,7 +156,7 @@ class LuisHelper:
                     "datetime", []
                 )
                 if len(dt_entities) > 0:
-                    if recognizer_result.entities.get("datetimeV2", ["today"])[0]:
+                    if recognizer_result.entities.get("datetime", ["today"])[0]:
                         for date in dt_entities:
                             result.datetimeV2 += [date["text"]]
                             
