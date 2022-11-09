@@ -333,12 +333,11 @@ class BookingDialog(CancelAndHelpDialog):
         else:
             n_child = 0
 
-        if (n_adult>1) or (n_child>0):
-            s_adult = "s" if (n_adult>1) else ""
-            s_child = "ren" if (n_child>1) else ""
-            with_child = f" and {n_child} child{s_child}." if (n_child>0) else "."
-            msg_passenger = f" The trip concern {n_adult} adult{s_adult}{with_child}"
-
+        s_adult = "s" if (n_adult>1) else ""
+        s_child = "ren" if (n_child>1) else ""
+        with_child = f" and {n_child} child{s_child}." if (n_child>0) else "."
+        msg_passenger = f" The trip concern {n_adult} adult{s_adult}{with_child}"
+        
         msg = (
             f"Please confirm, I have you traveling to { booking_details.destination }"
             f" from { booking_details.origin } on { booking_details.travel_date}."

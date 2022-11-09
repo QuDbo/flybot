@@ -19,7 +19,6 @@ from helpers.luis_helper import LuisHelper, Intent
 from flight_booking_recognizer import FlightBookingRecognizer
 from config import DefaultConfig
 
-
 class ReturnResolverDialog(CancelAndHelpDialog):
     """Resolve the return date"""
 
@@ -56,12 +55,12 @@ class ReturnResolverDialog(CancelAndHelpDialog):
     ) -> DialogTurnResult:
         """Prompt for the date."""
         user_response = step_context.options
-
         prompt_msg = "On what date would you like to return?"
         reprompt_msg = (
             "I'm sorry, for best results, please enter your return "
             "date including the month, day and year."
         )
+        
         if user_response is None:
             # We were not given any response at all so prompt the user.
             return await step_context.prompt(
@@ -116,7 +115,6 @@ class ReturnResolverDialog(CancelAndHelpDialog):
                     'input_user' : mini_luis_result.initial_demand
                 }
                 return await step_context.next(to_return)
-                # return await step_context.next(mini_luis_result.children)
             elif len(mini_luis_result.datetimeV2)>0:
                 to_return = {
                     'step_value' : mini_luis_result.datetimeV2[-1],

@@ -152,13 +152,11 @@ class LuisHelper:
                             result.geo += [geo["text"].capitalize()]
                             
                 # datetime entities
-                dt_entities = recognizer_result.entities.get("$instance", {}).get(
-                    "datetime", []
-                )
+                dt_entities = recognizer_result.entities.get("datetime", [])
                 if len(dt_entities) > 0:
                     if recognizer_result.entities.get("datetime", ["today"])[0]:
                         for date in dt_entities:
-                            result.datetimeV2 += [date["text"]]
+                            result.datetimeV2 += [date["timex"][0]]
                             
                 # number entities
                 nb_entities = recognizer_result.entities.get("$instance", {}).get(

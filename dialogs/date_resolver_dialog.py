@@ -115,7 +115,6 @@ class DateResolverDialog(CancelAndHelpDialog):
                     'input_user' : mini_luis_result.initial_demand
                 }
                 return await step_context.next(to_return)
-                # return await step_context.next(mini_luis_result.children)
             elif len(mini_luis_result.datetimeV2)>0:
                 to_return = {
                     'step_value' : mini_luis_result.datetimeV2[-1],
