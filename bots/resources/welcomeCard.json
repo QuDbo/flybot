@@ -6,7 +6,7 @@
     {
       "type": "Image",
       "url": "https://github.com/QuDbo/flybot/blob/main/bots/resources/flyme.png?raw=true",
-      "size": "stretch"
+      "size": "Large"
     },
     {
       "type": "TextBlock",
