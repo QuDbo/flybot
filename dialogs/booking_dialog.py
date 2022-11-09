@@ -31,6 +31,8 @@ from helpers.luis_helper import LuisHelper
 
 from config import DefaultConfig
 
+from botbuilder.schema import InputHints
+
 import json
 
 class BookingDialog(CancelAndHelpDialog):
@@ -364,6 +366,11 @@ class BookingDialog(CancelAndHelpDialog):
             # Bot has failed, report it to Insight
             properties = {'interpreted_options': booking_details.__dict__}
             self.telemetry_client.track_trace("Bot failure", json.dumps(properties), "ERROR")
+            
+            print(properties)
+            msg_txt = "Sending the content of all that to analysis..."
+            message = MessageFactory.text(msg_txt, msg_txt, InputHints.ignoring_input)
+            await step_context.context.send_activity(message)
             
             # return await step_context.end_dialog()
             return await step_context.end_dialog(step_context.result)
