@@ -45,9 +45,9 @@ class DialogAndWelcomeBot(DialogBot):
                 if member.name:
                     user_name = member.name
                 else:
-                    user_name = "fellow anonymous" 
+                    user_name = "anonymous user" 
                 await turn_context.send_activity(response)
-                await turn_context.send_activity(f"Hello there { user_name }! ")
+                await turn_context.send_activity(f"Hello { user_name } ! ")
 
     def create_response(self, activity: Activity, attachment: Attachment):
         """Create an attachment message response."""
